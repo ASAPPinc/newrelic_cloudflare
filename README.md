@@ -1,4 +1,4 @@
-# NOTE: This fork is intended to make 
+# NOTE: This fork is intended to make this plugin run in Lambda
 
 # Description
 
