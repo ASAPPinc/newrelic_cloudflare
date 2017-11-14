@@ -1,0 +1,18 @@
+{
+    "name": "newrelic_cloudflare",
+    "version": "1.0.0",
+    "description": "Cloudflare Plugin for Newrelic Fetches metrics from Cloudflare and aggregates the data, providing one dashboard that covers multiple Cloudflare sites. The code currently only supports Cloudflare Enterprise plans, as that is the only plan level that offers per-minute reporting. Can also collect performance data from local RailGun servers.",
+    "main": "cloudflare_monitor.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ASAPPinc/newrelic_cloudflare.git"
+    },
+    "author": "mobilenations",
+    "license": "ISC",
+    "dependencies": {
+        "async": "2.6.0",
+        "cloudflare4": "0.2.5",
+        "request": "2.83.0",
+        "util": "0.10.3"
+    }
+}

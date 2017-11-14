@@ -1,3 +1,5 @@
+# NOTE: This fork is intended to make 
+
 # Description
 
 Cloudflare Plugin for Newrelic
@@ -25,48 +27,34 @@ Can also collect performance data from local RailGun servers.
 
 ----
 
-# Installation
+# Deploying to Lambda
 
-- Install NodeJs and NPM [Download](https://nodejs.org/en/download/package-manager/)
-- Download plugin from GitHub and extract
-- Inside the plugin directory, install the required npm modules:
-    - `npm install async cloudflare4 request`
-
-Configure by changing the following variables in: `cloudflare_monitor.js`
-
-- cfConfig
-    - API Key/Email 
-  
-- rgConfig
-    - If you use railgun, enable stats.listen in railgun.conf and set stats.interval = 1
-    - Specify each railgun server in rgConfig
-    
-- newRelicConfig
-    - Newrelic license key and host name of the server this script will run it.
-
-We use [PM2](http://pm2.keymetrics.io) as a node process manager, which enables node.js script to run forever,
-gather logs, and to run at boot. PM2 assigns each process an ID, so the first (and only) process will be ID 0.
-
-    npm install pm2@latest -g  
-    pm2 start cloudflare_monitor.js
-
-    pm2 stop 0  
-    pm2 restart 0  
-    pm2 reload 0
-
-To check if the script is configured and running properly, `pm2 status 0`
-To start at boot: `pm2 startup`, followed by `pm2 save`.
+- Clone this repository.
+- Inside this directory, run `npm install`
+- After the dependencies have been successfully installed, run `zip -r ../newrelic_cloudflare.zip cloudflare_monitor.js node_modules/*`
+- Create a new Lambda function and deploy the file generated above and add the following environment variables:
+    - CLOUDFLARE_KEY: An API key retrieved from Cloudflare.
+    - CLOUDFLARE_EMAIL: The Cloudflare email associated with the API key.
+    - PLUGIN_HOST: The name of the host where the plugin is running. If running on Lambda, use "lambda.amazonaws.com".
+    - NEW_RELIC_LICENCE_KEY: The licence key retrieved from New Relic.
+- Set "Runtime" to Node.js 6.10
+- Set Handler to cloudflare_monitor.start
+- Click "Test" (or "Save and test") and configure a dummy Test event to verify the setup works.
+- After creating the function and verifying that it runs successfully, create a trigger to make it run on a schedule:
+    - Click on the "Triggers" tab.
+    - Click on "+ Add trigger".
+    - Click on the empty box on the left.
+    - Select "CloudWatch Events".
+    - Select "Create a new rule"
+    - Give the rule a descriptive name like "NewRelicCloudflareEvery<X>Minutes", substituting <X> with the frequency with which you wish this function to run.
+    - Select "Schedule expression" and enter "rate(<X> minutes)", again replacing <X> by the desired frequency.
+    - Click "Submit".
+- Click "Save"
 
 ---
 
 # License
 
 As-Is. Use at your own risk etc.
-
-----
-
-# Support
-
-Report issues on [GitHub Issues tracker](https://github.com/mobilenations/newrelic_railgun/issues)
 
 ----
