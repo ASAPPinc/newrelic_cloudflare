@@ -1,21 +1,14 @@
 // Cloudflare
-var cfConfig = { key: 'KEY HERE', email: 'ACCOUNT EMAIL'};
+var cfConfig = { key: process.env.CLOUDFLARE_KEY, email: process.env.CLOUDFLARE_EMAIL};
 
 // Local Railgun
-
 var rgConfig = [];
 //rgConfig.push({ ipAddress: 'RG INSTANCE IP', port: 24088, name: 'rg1' });
 //rgConfig.push({ ipAddress: 'RG INSTANCE IP', port: 24088, name: 'rg2' });
 
 
 // NewRelic Plugin Configuration
-var newRelicConfig = { host: 'rocky.mobilenations.com', licenseKey: '298bc002f840771789191226c84ffda501ca3a2b'};
-
-//npm install cloudflare4
-
-//-----------------------------
-// Nothing to configure below
-//-----------------------------
+var newRelicConfig = { host: process.env.PLUGIN_HOST, licenseKey: process.env.NEW_RELIC_LICENCE_KEY};
 
 "use strict"
 
@@ -34,12 +27,8 @@ cfData['summary'] = {};
 
 var parsedMetrics = {};
 
-start();
+exports.start = function(event, context) {
 
-// Connect to Pool Masters
-function start() {
-
-    // On startup, fetch and post
     getZoneIDs(function () {
         if (rgConfig.length>0) {
             getRailgun();
@@ -49,31 +38,6 @@ function start() {
 
         });
     });
-
-
-    // Setup intervals.
-    // Every 60 minutes update getZoneIDs
-    setInterval(function () {
-        getZoneIDs(function () {});
-    }, (1000*60*60));
-
-    // Every minute getXenMetrics, followed by newrelicPost 30s later
-    // We execute newrelicPost seperate from getAnalytics
-    setInterval(function () {
-
-        if (rgConfig.length>0) {
-            getRailgun();
-        }
-
-        getAnalytics(function () {});
-
-        setTimeout(function () {
-            newrelicPost();
-        }, (1000*30)); //30
-
-    }, (1000*60)); //60
-
-
 }
 
 
@@ -129,8 +93,6 @@ function getZoneIDs(callback) {
              var untiltime = Math.floor(Date.parse(dataset.until) / 1000);
 
              var metric_id;
-
-             //console.log(dataset);
 
              // Requests
              metric_id = 'Component/Cloudflare/bySite/' + cfData['zones'][zone.id].name + '/Requests/total[Requests/second]';
@@ -351,8 +313,6 @@ function newrelicPost() {
     component.metrics = parsedMetrics;
     data['components'].push(component);
 
-    //console.log(util.inspect(data, false, null));
-
     request({
         url: 'https://platform-api.newrelic.com/platform/v1/metrics',
         method: 'POST',
@@ -451,4 +411,3 @@ function nextSpan(span) {
 
     return base;
 }
-
