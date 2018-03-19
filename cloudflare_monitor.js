@@ -90,7 +90,7 @@ function getZoneIDs(callback) {
          cfApi.zoneAnalyticsDashboardGet(zone.id, parameters).then(function (analytics) {
 
              var dataset = analytics.timeseries[analytics.timeseries.length - 1];
-             var untiltime = Math.floor(Date.parse(dataset.until) / 1000);
+             var untiltime = Math.floor(Date.parse(dataset.until) / 1000); 
 
              var metric_id;
 
